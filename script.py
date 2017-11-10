@@ -26,10 +26,17 @@ class Window():
             tags="image_tag"
         )
 
-        self.canvas.bind('<Button-1>', self.on_click)
+        self.canvas.bind('<Button-1>', self.on_click_l)
+        self.canvas.bind('<Button-2>', self.on_click_r)
         self.canvas.pack(fill = tk.BOTH)
 
-    def on_click(self, event):
+    def on_click_l(self, event):
+        self.on_click(prefix="0_")
+
+    def on_click_r(self, event):
+        self.on_click(prefix="1_")
+
+    def on_click(self, prefix="MISSING_"):
         if self.current_image < len(self.images):
             prev = self.images[self.current_image]
 
@@ -41,12 +48,8 @@ class Window():
             else:
                 self.canvas.delete('all')
 
-            if event.x < 250:
-                rename(join(src_folder, prev.filename),
-                       join(dest_folder, "0_" + prev.filename))
-            else:
-                rename(join(src_folder, prev.filename),
-                       join(dest_folder, "1_" + prev.filename))
+            rename(join(src_folder, prev.filename),
+                   join(dest_folder, prefix + prev.filename))
 
 
 if __name__ == '__main__':
