@@ -53,7 +53,7 @@ class Window():
 
 
 if __name__ == '__main__':
-    # Move files back in the destination folder
+    # Move files back in the source folder
     for file in [f for f in listdir(dest_folder) if isfile(join(dest_folder, f))]:
         rename(join(dest_folder, file), join(src_folder, file.split('_')[-1]))
 
