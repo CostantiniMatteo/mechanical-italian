@@ -1,3 +1,4 @@
+import sys
 from os import listdir, rename, path, makedirs
 from os.path import isfile, join
 import argparse
@@ -7,6 +8,7 @@ import tkinter as tk
 
 src_folder = "source/"
 dest_folder = "dest/"
+labels = {}
 
 class Window():
     def __init__(self, main):
@@ -56,8 +58,9 @@ class Window():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("--source", help="Directory containing the images. Default source/")
-    parser.add_argument("--output", help="Directory where the images will be saved. Default dest/")
+    parser.add_argument('-s', '--source', help="Directory containing the images. Default source/")
+    parser.add_argument('-o', '--output', help="Directory where the images will be saved. Default dest/")
+    parser.add_argument('-l', '--labels', nargs='+', help='<Required> List of labels and key. label_name:key', required=True)
     args = parser.parse_args()
 
     if args.source is not None:
@@ -67,6 +70,13 @@ if __name__ == '__main__':
         dest_folder = args.output
         if not path.exists(dest_folder):
             makedirs(dest_folder)
+
+    if len(args.labels) < 2:
+        sys.exit("Error: At least two labels are required")
+
+    for s in args.labels:
+        label, key = s.split(':')
+        labels[key] = label
 
     root = tk.Tk()
     Window(root)
