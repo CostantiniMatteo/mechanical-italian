@@ -30,30 +30,22 @@ class Window():
             tags="image_tag"
         )
 
-        self.canvas.bind('<Button-1>', self.on_click_l)
-        self.canvas.bind('<Button-2>', self.on_click_r)
+        self.canvas.bind('<Key>', self.on_key_press)
         self.canvas.pack(fill = tk.BOTH)
 
-    def on_click_l(self, event):
-        self.on_click(prefix="ciao")
-
-    def on_click_r(self, event):
-        self.on_click(prefix="lol")
-
-    def on_click(self, prefix="MISSING_"):
+    def on_key_press(self, event):
         if self.current_image < len(self.images):
             prev = self.images[self.current_image]
 
             self.current_image += 1
             if self.current_image < len(self.images):
-
                 self.canvas.itemconfig(self.image_on_canvas,
                                        image=self.images[self.current_image])
             else:
                 self.canvas.delete('all')
 
             rename(join(src_folder, prev.filename),
-                   join(dest_folder, prefix, prev.filename))
+                   join(dest_folder, labels[event.char], prev.filename))
 
 
 if __name__ == '__main__':
