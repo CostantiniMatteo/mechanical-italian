@@ -1,5 +1,7 @@
-from os import listdir, rename
+from os import listdir, rename, path, makedirs
 from os.path import isfile, join
+import argparse
+
 from PIL import Image, ImageTk
 import tkinter as tk
 
@@ -53,9 +55,18 @@ class Window():
 
 
 if __name__ == '__main__':
-    # Move files back in the source folder
-    for file in [f for f in listdir(dest_folder) if isfile(join(dest_folder, f))]:
-        rename(join(dest_folder, file), join(src_folder, file.split('_')[-1]))
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--source", help="Directory containing the images")
+    parser.add_argument("--output", help="Directory where the images will be saved")
+    args = parser.parse_args()
+
+    if args.source is not None:
+        src_folder = args.source
+
+    if args.output is not None:
+        dest_folder = args.output
+        if not path.exists(dest_folder):
+            makedirs(dest_folder)
 
     root = tk.Tk()
     Window(root)
