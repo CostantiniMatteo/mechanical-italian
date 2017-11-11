@@ -56,8 +56,8 @@ class Window():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("--source", help="Directory containing the images")
-    parser.add_argument("--output", help="Directory where the images will be saved")
+    parser.add_argument("--source", help="Directory containing the images. Default source/")
+    parser.add_argument("--output", help="Directory where the images will be saved. Default dest/")
     args = parser.parse_args()
 
     if args.source is not None:
