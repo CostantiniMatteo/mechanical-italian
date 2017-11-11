@@ -35,10 +35,10 @@ class Window():
         self.canvas.pack(fill = tk.BOTH)
 
     def on_click_l(self, event):
-        self.on_click(prefix="0_")
+        self.on_click(prefix="ciao")
 
     def on_click_r(self, event):
-        self.on_click(prefix="1_")
+        self.on_click(prefix="lol")
 
     def on_click(self, prefix="MISSING_"):
         if self.current_image < len(self.images):
@@ -53,7 +53,7 @@ class Window():
                 self.canvas.delete('all')
 
             rename(join(src_folder, prev.filename),
-                   join(dest_folder, prefix + prev.filename))
+                   join(dest_folder, prefix, prev.filename))
 
 
 if __name__ == '__main__':
@@ -77,6 +77,9 @@ if __name__ == '__main__':
     for s in args.labels:
         label, key = s.split(':')
         labels[key] = label
+
+        if not path.exists(join(dest_folder, label)):
+            makedirs(join(dest_folder, label))
 
     root = tk.Tk()
     Window(root)
