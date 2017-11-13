@@ -18,7 +18,6 @@ class Window():
         self.dest = dest
 
         self.main = tk.Tk()
-        # self.main.bind('<Key>', lambda e: self.move_image(e.char) and self.show_next_image())
         self.main.bind("<Button-1>", self.mouse_callback)
         self.main.bind("<Escape>", lambda x: self.main.destroy())
         self.main.bind("<BackSpace>", self.undo_action)
