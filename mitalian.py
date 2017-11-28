@@ -8,7 +8,7 @@ from PIL import Image, ImageTk
 
 
 class Window():
-    def __init__(self, labels, *, source, dest='.', preload=False):
+    def __init__(self, labels, *, source, dest='.', preload=False, undo_limit=10):
         assert exists(source), "Source directory does not exist!"
 
         file_list = [f for f in listdir(source) if isfile(join(source, f))]
@@ -41,6 +41,7 @@ class Window():
             self.images = images_gen
         self.current_image = next(self.images, None)
         self.previous_images = []
+        self.undo_limit = int(undo_limit)
 
         self.build_window()
         self.main.mainloop()
@@ -76,6 +77,9 @@ class Window():
                    join(self.dest, self.labels[key], prev_filename))
 
             self.previous_images.append((self.current_image, key))
+
+            if len(self.previous_images) > self.undo_limit:
+                self.previous_images.pop(0)
             return True
         except e:
             print(e.message)
@@ -109,10 +113,11 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--dest', default='.', help="Directory where the images will be saved. Defaults to current directory.")
     parser.add_argument('-l', '--labels', nargs='+', required=True, help='<Required> List of labels and key. label_name:key')
     parser.add_argument('-p', '--preload', action='store_true', help="Preload all images in memory at the beginning, useful when you have really big images and a lot of memory.")
+    parser.add_argument('-u', '--undolimit', default='10', help="Maximum number of undo actions. Defaults to 10.")
     args = parser.parse_args()
 
     if len(args.labels) < 2:
         sys.exit("Error: At least two labels are required")
 
-    Window(labels=args.labels, source=args.source, dest=args.dest, preload=args.preload)
+    Window(labels=args.labels, source=args.source, dest=args.dest, preload=args.preload, undo_limit=args.undolimit)
 
