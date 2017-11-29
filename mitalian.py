@@ -18,7 +18,6 @@ class Window():
         self.dest = dest
 
         self.main = tk.Tk()
-        self.main.bind("<Button-1>", self.mouse_callback)
         self.main.bind("<Escape>", lambda x: self.main.destroy())
         self.main.bind("<BackSpace>", self.undo_action)
 
@@ -66,11 +65,7 @@ class Window():
         self.canvas.pack(fill = tk.BOTH)
 
 
-    def mouse_callback(self, event):
-        print('mouse called', event)
-
     def move_image(self, key):
-        print('called', key)
         try:
             prev_filename = self.current_image.filename
             rename(join(self.source, prev_filename),
@@ -100,7 +95,6 @@ class Window():
             image, key = self.previous_images.pop(-1)
             self.images = itertools.chain([image, self.current_image], self.images)
 
-            print(image.filename, key)
             rename(join(self.dest, self.labels[key], image.filename),
                    join(self.source, image.filename))
 
