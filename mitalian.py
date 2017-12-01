@@ -71,12 +71,17 @@ class Window():
             ratio = maxWidth / width
             new_width = maxWidth * ratio
             new_height = height / width * new_width
+
+            return image.resize((int(new_width), int(new_height)), Image.ANTIALIAS)
+
         if height > maxHeight:
             ratio = maxHeight / height
             new_height = height * ratio
             new_width = width / height * new_height
 
-        return image.resize((int(new_width), int(new_height)), Image.ANTIALIAS)
+            return image.resize((int(new_width), int(new_height)), Image.ANTIALIAS)
+
+        return image
 
 
     def build_window(self):
