@@ -7,7 +7,13 @@ import itertools
 from PIL import Image, ImageTk
 
 
+
 class Window():
+    CANVAS_WIDTH = 500
+    CANVAS_HEIGTH = 500
+    IMAGE_WITDH = 300
+    IMAGE_HEIGTH = 300
+
     def __init__(self, labels, *, source, dest='.', preload=False, undo_limit=10):
         assert exists(source), "Source directory does not exist!"
 
@@ -48,20 +54,44 @@ class Window():
     def load_image(self, file):
         tmp = Image.open(join(self.source, file))
         filename = basename(tmp.filename)
-        new_image = ImageTk.PhotoImage(tmp)
+
+        new_image = ImageTk.PhotoImage(self.resize_image(tmp,
+            self.IMAGE_WITDH,
+            self.IMAGE_HEIGTH)
+        )
         new_image.filename = filename
         return new_image
 
+    def resize_image(self, image, maxWidth, maxHeight):
+        ratio = 0
+        width = image.width
+        height = image.height
+
+        if width > maxWidth:
+            ratio = maxWidth / width
+            new_width = maxWidth * ratio
+            new_height = height / width * new_width
+        if height > maxHeight:
+            ratio = maxHeight / height
+            new_height = height * ratio
+            new_width = width / height * new_height
+
+        return image.resize((int(new_width), int(new_height)), Image.ANTIALIAS)
+
 
     def build_window(self):
-        self.canvas = tk.Canvas(self.main, width=500, height=500)
+        self.canvas = tk.Canvas(self.main,
+            width=self.CANVAS_WIDTH,
+            height=self.CANVAS_HEIGTH
+        )
         self.image_on_canvas = self.canvas.create_image(
-            250,
-            250,
+            self.CANVAS_WIDTH / 2,
+            self.CANVAS_WIDTH / 2,
             anchor=tk.CENTER,
             image=self.current_image,
             tags="image_tag"
         )
+
         self.canvas.pack(fill = tk.BOTH)
 
 
