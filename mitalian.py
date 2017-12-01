@@ -28,7 +28,8 @@ class Window():
         self.main.bind("<BackSpace>", self.undo_action)
 
         self.labels = {}
-        for key, label in labels:
+        for key in labels.keys():
+            label = labels[key]
             self.labels[key] = label
 
             if not exists(join(dest, label)):
@@ -148,9 +149,9 @@ if __name__ == '__main__':
     if len(args.labels) < 2:
         sys.exit("Error: At least two labels are required")
 
-    labels = []
+    labels = {}
     for label, key in [s.split(':') for s in args.labels]:
-        labels.append((key, label))
+        labels[key] = label
 
     undo_limit = int(args.undolimit)
 
