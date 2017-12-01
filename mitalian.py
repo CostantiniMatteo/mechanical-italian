@@ -3,7 +3,7 @@ import sys, argparse
 import tkinter as tk
 from os import listdir, rename, makedirs
 from os.path import isfile, join, basename, exists
-import itertools
+import itertools as it
 from PIL import Image, ImageTk
 
 
@@ -11,10 +11,12 @@ from PIL import Image, ImageTk
 class Window():
     CANVAS_WIDTH = 500
     CANVAS_HEIGTH = 500
-    IMAGE_WITDH = 300
-    IMAGE_HEIGTH = 300
+    IMAGE_WITDH = 500
+    IMAGE_HEIGTH = 500
 
-    def __init__(self, labels, *, source, dest='.', preload=False, undo_limit=10):
+    def __init__(self, labels, *,
+            source='.', dest='.', preload=False, undo_limit=10):
+
         assert exists(source), "Source directory does not exist!"
 
         file_list = [f for f in listdir(source) if isfile(join(source, f))]
@@ -52,11 +54,13 @@ class Window():
         self.build_window()
         self.main.mainloop()
 
+
     def load_image(self, file):
         tmp = Image.open(join(self.source, file))
         filename = basename(tmp.filename)
 
-        new_image = ImageTk.PhotoImage(self.resize_image(tmp,
+        new_image = ImageTk.PhotoImage(self.resize_image(
+            tmp,
             self.IMAGE_WITDH,
             self.IMAGE_HEIGTH)
         )
@@ -70,23 +74,24 @@ class Window():
 
         if width > maxWidth:
             ratio = maxWidth / width
-            new_width = maxWidth * ratio
-            new_height = height / width * new_width
+            new_width = int(maxWidth * ratio)
+            new_height = int(height / width * new_width)
 
-            return image.resize((int(new_width), int(new_height)), Image.ANTIALIAS)
+            return image.resize((new_width, new_height), Image.ANTIALIAS)
 
         if height > maxHeight:
             ratio = maxHeight / height
-            new_height = height * ratio
-            new_width = width / height * new_height
+            new_height = int(height * ratio)
+            new_width = int(width / height * new_height)
 
-            return image.resize((int(new_width), int(new_height)), Image.ANTIALIAS)
+            return image.resize((new_width, new_height), Image.ANTIALIAS)
 
         return image
 
 
     def build_window(self):
-        self.canvas = tk.Canvas(self.main,
+        self.canvas = tk.Canvas(
+            self.main,
             width=self.CANVAS_WIDTH,
             height=self.CANVAS_HEIGTH
         )
@@ -129,7 +134,7 @@ class Window():
     def undo_action(self, event):
         if self.previous_images:
             image, key = self.previous_images.pop(-1)
-            self.images = itertools.chain([image, self.current_image], self.images)
+            self.images = it.chain([image, self.current_image], self.images)
 
             rename(join(self.dest, self.labels[key], image.filename),
                    join(self.source, image.filename))
@@ -149,9 +154,7 @@ if __name__ == '__main__':
     if len(args.labels) < 2:
         sys.exit("Error: At least two labels are required")
 
-    labels = {}
-    for label, key in [s.split(':') for s in args.labels]:
-        labels[key] = label
+    labels = { k: v for k, v in [s.split(':') for s in args.labels] }
 
     undo_limit = int(args.undolimit)
 
