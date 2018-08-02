@@ -19,15 +19,15 @@ class Window():
 
         assert exists(source), "Source directory does not exist!"
 
-        file_list = [f for f in listdir(source) if isfile(join(source, f))]
-        assert len(file_list) > 0, "There are no files in the source directory!"
-
         self.source = source
         self.dest = dest
 
         self.main = tk.Tk()
         self.main.bind("<Escape>", lambda x: self.main.destroy())
         self.main.bind("<BackSpace>", self.undo_action)
+
+        if not exists(dest):
+            makedirs(dest)
 
         self.labels = {}
         for key in labels.keys():
@@ -42,6 +42,8 @@ class Window():
             self.main.bind(key, make_lambda(key))
 
         # The generator is lazy evalued unless preload is True
+        file_list = self.get_file_list(self.source)
+        assert len(file_list) > 0, "There are no files in the source directory!"
         images_gen = (self.load_image(f) for f in file_list)
         if preload:
             self.images = iter(list(images_gen))
@@ -54,6 +56,16 @@ class Window():
         self.build_window()
         self.main.mainloop()
 
+
+    def get_file_list(self, source):
+            file_list = []
+            for item in listdir(source):
+                if isfile(join(source, item)):
+                    file_list.append(item)
+                else:
+                    pass
+                    # file_list.extend(self.get_file_list(join(source, item)))
+            return file_list
 
     def load_image(self, file):
         tmp = Image.open(join(self.source, file))
@@ -146,7 +158,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-s', '--source', default='.', help="Directory containing the images. Defaults to current directory.")
     parser.add_argument('-d', '--dest', default='.', help="Directory where the images will be saved. Defaults to current directory.")
-    parser.add_argument('-l', '--labels', nargs='+', required=True, help='<Required> List of labels and key. label_name:key')
+    parser.add_argument('-l', '--labels', nargs='+', default=['y:positive', 'n:negative'], help='List of labels and key. label_name:key. Default to two labes: positive binded to y and negative binded to n.')
     parser.add_argument('-p', '--preload', action='store_true', help="Preload all images in memory at the beginning, useful when you have really big images and a lot of memory.")
     parser.add_argument('-u', '--undolimit', default='10', help="Maximum number of undo actions. Defaults to 10.")
     args = parser.parse_args()
